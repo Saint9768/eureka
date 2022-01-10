@@ -362,14 +362,19 @@ public class ResponseCacheImpl implements ResponseCache {
     Value getValue(final Key key, boolean useReadOnlyCache) {
         Value payload = null;
         try {
+            // 1、使用只读缓存时
             if (useReadOnlyCache) {
+                // 1.1、先从只读缓存获取数据
                 final Value currentPayload = readOnlyCacheMap.get(key);
                 if (currentPayload != null) {
                     payload = currentPayload;
                 } else {
+                    // 1.2、只读缓存中获取不到数据时，则从读写缓存中获取数据，并将数据缓存到只读缓存
                     payload = readWriteCacheMap.get(key);
                     readOnlyCacheMap.put(key, payload);
                 }
+
+                // 2、不使用只读缓存时，则直接从读写缓存中获取
             } else {
                 payload = readWriteCacheMap.get(key);
             }
